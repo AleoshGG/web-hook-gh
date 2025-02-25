@@ -1,0 +1,14 @@
+package main
+
+import (
+	"web-hook-gh/pull_reques_webhook/infrastructure/routes"
+
+	"github.com/gin-gonic/gin"
+)
+
+func main() {
+	r := gin.Default()
+	infrastructure.RegisterRouter(r)
+
+	r.Run()
+}
