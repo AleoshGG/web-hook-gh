@@ -2,16 +2,19 @@ package aplication
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"web-hook-gh/pull_reques_webhook/domain"
 )
 
-func ProcessPullRequestEvent(rawData []byte) int {
+func ProcessPullRequestEvent(rawData []byte) (int, string) {
 	var eventPayload domain.PullRequestEventPayload
 
 	if err := json.Unmarshal(rawData, &eventPayload); err != nil {
-		return 403
+		return 403, " "
 	}
+
+	message := createMessage(eventPayload.PullRequest.Base.Ref, eventPayload.PullRequest.Head.Ref, eventPayload.PullRequest.User.Login, eventPayload.Repository.FullName)
 
 	if (eventPayload.Action == "closed") {
 		log.Printf("Se hace el pull hacia la rama: %s \n", eventPayload.PullRequest.Base.Ref)
@@ -20,5 +23,12 @@ func ProcessPullRequestEvent(rawData []byte) int {
 		log.Printf("Nombre del repositorio: %s \n", eventPayload.Repository.FullName)
 	}
 
-	return 200
+	return 200, message
+}
+
+func createMessage(base string, head string, user string, repository string) string {
+	return fmt.Sprint("Se hace el pull hacia la rama: "+ base + "\n",
+					   "El pull viene de la rama: "+ head + "\n", 
+					   "Usuario: "+ user + "\n",
+					   "Nombre del repositorio: "+ repository + "\n")
 }

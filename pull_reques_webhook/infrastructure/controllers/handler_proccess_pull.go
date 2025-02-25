@@ -28,7 +28,15 @@ func HandlePullRequestEvent(ctx *gin.Context) {
 	case "ping":
 		ctx.JSON(http.StatusOK, gin.H{"status": "success"})
 	case "pull_request":
-		statusCode = aplication.ProcessPullRequestEvent(rawData)
+		status, msg := aplication.ProcessPullRequestEvent(rawData)
+		
+		statusCode = status
+
+		log.Print(msg)
+
+		if msg != " " {
+			SendMessageToDiscord(msg)
+		}
 	}
 
 	switch statusCode {
